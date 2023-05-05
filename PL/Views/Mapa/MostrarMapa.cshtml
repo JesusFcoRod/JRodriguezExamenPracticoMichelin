@@ -1,0 +1,99 @@
+﻿@model ML.Localizacion
+@{
+    ViewBag.Title = "MostrarMapa";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    <link rel="stylesheet" href="~/Content/Direccion.css" />
+</head>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCSKBDdPPlfca_zTwyxKiicRQn1qfgRjLw&callback=initMap&libraries=&y=weeky" defer></script>
+
+
+<h1> </h1>
+<br />
+<br />
+<br />
+<br />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="center" id="game-map">
+        </div>
+    </div>
+
+
+    <div class="col-md-6">
+        <div style="text-align:center" id="Map">
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript">
+
+        function initMap() {
+
+            myLatlng = { lat: 19.42847, lng: -99.12766 };
+            const map = new google.maps.Map(document.getElementById("Map"), {
+                zoom: 11,
+                center: myLatlng,
+            });
+
+            window.initMap = initMap;
+
+
+            @foreach (ML.Localizacion localizacion in Model.Localizaciones)
+    {
+            <Text>
+            var contentString = '<div id="content">' +
+                '<div id="siteNotice">' +
+                '</div>' +
+                'Nombre: ' + '@localizacion.Nombre' +
+                '<div id="bodyContent">' +
+                'Latitud: ' + @localizacion.Latitud + "<br>" +
+                'Longitud: ' + @localizacion.Longitud + "<br>" +
+                'ID: ' + @localizacion.IdPunto + "<br>" +
+                '</div>' +
+                '</div>';
+
+            var marker_@localizacion.IdPunto = new google.maps.Marker({ position: { lat: @localizacion.Latitud, lng:@localizacion.Longitud}, map: map });
+            (marker_@localizacion.IdPunto).addListener("click", function () {
+                (infoWindow_@localizacion.IdPunto).open(map, marker_@localizacion.IdPunto);
+
+                Cordenadas = { lat: @localizacion.Latitud, lng:@localizacion.Longitud};
+
+                const panorama = new google.maps.StreetViewPanorama(
+                    document.getElementById("game-map"),
+                    {
+                        position: Cordenadas,
+                        pov: {
+                            heading: 34,
+                            pitch: 10,
+                        },
+                    }
+                );
+                map.setStreetView(panorama);
+
+            });
+
+            var infoWindow_@localizacion.IdPunto = new google.maps.InfoWindow({
+                content: contentString,
+                ariaLabel: "Punto",
+
+            });
+
+
+
+            </Text>
+
+    }
+
+        };
+    </script>
+
+}
